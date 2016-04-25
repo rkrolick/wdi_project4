@@ -30,22 +30,27 @@ PhaserGame.prototype = {
   create: function(){
     this.background = this.add.sprite(0, 0, 'background');
     this.launcher = this.add.sprite(40, 520, 'launcher');
-    this.missle = this.add.sprite(this.launcher.x+15, this.launcher.y-30, 'missle');
-    this.launcherTurret = this.add.sprite(this.launcher.x+10, this.launcher.y-20, 'launcherTurret');
+    this.missle = this.add.sprite(this.launcher.x+20, this.launcher.y+10, 'missle');
+    this.launcherTurret = this.add.sprite(this.launcher.x+20, this.launcher.y+20, 'launcherTurret');
     this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
     this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
+    this.launcherTurret.anchor.y = 1;
+    this.missle.anchor.y = 1;
   },
 
   update: function(){
-    if(this.aimUpKey.isDown){
-      this.launcherTurret.angle--;
-      this.missle.angle--;
+    if(this.aimUpKey.isDown && this.launcherTurret.angle > -90){
+      this.moveTurret(-1);
     }
-    if(this.aimDownKey.isDown){
-      this.launcherTurret.angle++;
-      this.missle.angle++;
+    if(this.aimDownKey.isDown && this.launcherTurret.angle < 0){
+      this.moveTurret(1);
     }
   },
+
+  moveTurret(velocity){
+    this.launcherTurret.angle += velocity;
+    this.missle.angle += velocity;
+  }
 }
 
 game.state.add('game', PhaserGame, true);
