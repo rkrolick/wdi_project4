@@ -32,25 +32,20 @@ PhaserGame.prototype = {
     this.launcher = this.add.sprite(40, 520, 'launcher');
     this.missle = this.add.sprite(this.launcher.x+15, this.launcher.y-30, 'missle');
     this.launcherTurret = this.add.sprite(this.launcher.x+10, this.launcher.y-20, 'launcherTurret');
-
     this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
-    // this.aimUpKey.onDown.add(this.moveTurretUp, this);
     this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
-    // this.aimUpKey.onDown.add(this.moveTurretDown, this);
   },
 
   update: function(){
-
+    if(this.aimUpKey.isDown){
+      this.launcherTurret.angle--;
+      this.missle.angle--;
+    }
+    if(this.aimDownKey.isDown){
+      this.launcherTurret.angle++;
+      this.missle.angle++;
+    }
   },
-
-  moveTurretUp: function(){
-
-  },
-
-  moveTurretDown: function(){
-
-  },
-
 }
 
 game.state.add('game', PhaserGame, true);
