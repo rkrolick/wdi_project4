@@ -54,7 +54,7 @@ PhaserGame.prototype = {
   update: function(){
     // Input checks
     if(this.aimUpKey.isDown && this.launcherTurret.angle > -90){this.moveTurret(-1);}
-    if(this.aimDownKey.isDown&& this.launcherTurret.angle < 0 ){this.moveTurret( 1);}
+    if(this.aimDownKey.isDown && this.launcherTurret.angle < 0 ){this.moveTurret( 1);}
     if(this.moreLaunchPowerKey.isDown){this.adjustLaunchPower(10);}
     if(this.lessLaunchPowerKey.isDown){this.adjustLaunchPower(-10);}
     if(this.launchKey.isDown){this.fire();}
@@ -93,9 +93,15 @@ PhaserGame.prototype = {
   },
 
   resetMissle: function(){
+    this.missle.isActive = false;
     this.missle.kill();
     this.camera.follow();
     this.add.tween(this.camera).to({x:0}, 1000, "Quint", true, 1000);
+    this.reloadMissle();
+  },
+
+  reloadMissle: function(){
+    
   }
 
 
