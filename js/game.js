@@ -32,10 +32,15 @@ PhaserGame.prototype = {
     this.launcher = this.add.sprite(40, 520, 'launcher');
     this.missle = this.add.sprite(this.launcher.x+20, this.launcher.y+10, 'missle');
     this.launcherTurret = this.add.sprite(this.launcher.x+20, this.launcher.y+20, 'launcherTurret');
-    this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
-    this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
     this.launcherTurret.anchor.y = 1;
     this.missle.anchor.y = 1;
+
+    this.launchKey = this.input.mouse.capture = true;
+    this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
+    this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
+    this.launchKey = this.input.activePointer.leftButton;
+
+    this.missle.isActive = false;
   },
 
   update: function(){
@@ -45,12 +50,31 @@ PhaserGame.prototype = {
     if(this.aimDownKey.isDown && this.launcherTurret.angle < 0){
       this.moveTurret(1);
     }
+    if(this.launchKey.isDown && !this.missle.isActive){
+      this.missle.isActive = true;
+      this.fire();
+    }
+    this.updateMissleRotation();
   },
 
-  moveTurret(velocity){
-    this.launcherTurret.angle += velocity;
-    this.missle.angle += velocity;
+  moveTurret: function(degree){
+    this.launcherTurret.angle += degree;
+    this.missle.angle += degree;
+  },
+
+  fire: function(){
+    this.physics.arcade.enable(this.missle);
+    this.physics.arcade.velocityFromRotation(this.launcherTurret.rotation, 500, this.missle.body.velocity);
+    this.missle.initialY = this.missle.body.velocity.y;
+  },
+
+  updateMissleRotation(){
+    if(this.missle.isActive){
+      this.missle.rotation = Math.atan2(this.missle.body.velocity.y, this.missle.body.velocity.x);
+    }
   }
+
+
 }
 
 game.state.add('game', PhaserGame, true);
