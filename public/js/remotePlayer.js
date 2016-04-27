@@ -1,7 +1,7 @@
-var RemotePlayer = function (index, game, startX, startY){
+var RemotePlayer = function (id, game, startX, startY){
   var x = startX;
   var y = startY;
-
+  this.id = id;
   this.game = game;
   this.alive = true;
   this.launcher = this.game.add.sprite(x, y, 'launcher');

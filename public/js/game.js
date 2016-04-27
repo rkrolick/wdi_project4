@@ -1,6 +1,7 @@
 var game = new Phaser.Game(1080, 720, Phaser.CANVAS, 'game');
 
 var PhaserGame = function(game){
+  this.id = null;
   this.launcherBase = null;
   this.launcherTurret = null;
   this.missle = null;
@@ -36,7 +37,7 @@ PhaserGame.prototype = {
 
   create: function(){
     // Connect to server
-    socket = io.connect("http://localhost:8000/", {transports:["websocket"]})
+    this.socket = io.connect("http://localhost:8000/", {transports:["websocket"]})
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
     this.ground = this.add.sprite(0, 670, 'ground');
@@ -145,12 +146,8 @@ PhaserGame.prototype = {
     this.missle.angle = this.launcherTurret.angle;
   },
 
-  spawnRemotePlayer: function(){
-    if(this.spawnDelay == 0){
-      this.remotePlayers.push(new RemotePlayer(this.remotePlayerNum, this, this.world.randomX, 595));
-      this.remotePlayerNum++;
-      this.spawnDelay=10;
-    }
+  spawnRemotePlayer: function(id,x){
+    this.remotePlayers.push(new RemotePlayer(id, this, x, 595));
   },
 
   destroyEnemy: function(i){
@@ -161,28 +158,42 @@ PhaserGame.prototype = {
   },
 
   setEventHandlers: function(){
-    socket.on("connect", this.onSocketConnected);
-    socket.on("disconnect", this.onSocketDisconnect);
-    socket.on("new player", this.onNewPlayer);
-    socket.on("move turret", this.onMoveTurret);
-    socket.on("remove player", this.onRemovePlayer);
+    this.socket.on("connect", this.onSocketConnected.bind(this));
+    this.socket.on("disconnect", this.onSocketDisconnect.bind(this));
+    this.socket.on("new player", this.onNewPlayer.bind(this));
+    this.socket.on("move turret", this.onMoveTurret.bind(this));
+    this.socket.on("remove player", this.onRemovePlayer.bind(this));
   },
 
   onSocketConnected: function(){
     console.log("Connected to server");
+    this.socket.emit("new player", {x: this.launcher.x, y: this.launcher.y});
   },
   onSocketDisconnect: function(){
     console.log("Disconnected from server");
   },
   onNewPlayer: function(data){
     console.log("New player connected: " + data.id);
+    this.spawnRemotePlayer(data.id, data.x);
   },
   onMoveTurret: function(data){
     console.log();
   },
   onRemovePlayer: function(data){
-    console.log();
+    console.log(data.id + "has left the game");
+    var index = this.indexById(data.id);
+    this.destroyEnemy(index);
   },
+
+  indexById(id){
+    for(var i = 0; i < this.remotePlayers.length; i++){
+      if(this.remotePlayers[i].id == id){
+        return i;
+      }
+    }
+    return false;
+  }
+
 }
 
 game.state.add('game', PhaserGame, true);
