@@ -11,6 +11,7 @@ var PhaserGame = function(game){
   this.aimDownKey = null;
   this.launchBtn = null;
   this.spawnPlayerKey = null;
+  this.socket = null;
   this.remotePlayers = [];
   // Temp usage until server is created.
   this.remotePlayerNum = 0;
@@ -34,6 +35,8 @@ PhaserGame.prototype = {
   },
 
   create: function(){
+    // Connect to server
+    socket = io.connect("http://localhost", {port: 8000, transports:["websocket"]})
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
     this.ground = this.add.sprite(0, 670, 'ground');
@@ -64,6 +67,8 @@ PhaserGame.prototype = {
     // Display hud
     this.launchPowerTxt = this.add.text(10, 10, "Power: 500", {font: "40px Arial", fill: "#FF0000"});
     this.launchPowerTxt.fixedToCamera = true;
+    // Start listening for server communications
+    this.setEvenHandlers();
   },
 
   update: function(){
@@ -153,6 +158,10 @@ PhaserGame.prototype = {
     this.remotePlayers[i].launcherTurret.kill();
     this.remotePlayers[i].missle.kill();
     this.remotePlayers.splice(i,1);
+  },
+
+  setEventHandlers: function(){
+
   }
 }
 
