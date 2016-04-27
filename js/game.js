@@ -70,7 +70,7 @@ PhaserGame.prototype = {
     if(this.aimDownKey.isDown && this.launcherTurret.angle < -1){this.moveTurret( 1);}
     if(this.moreLaunchPowerKey.isDown && this.launchPower < 1000){this.adjustLaunchPower(10);}
     if(this.lessLaunchPowerKey.isDown && this.launchPower > 500){this.adjustLaunchPower(-10);}
-    if(this.spawnPlayerKey.isDown){this.spawnPlayer();}
+    if(this.spawnPlayerKey.isDown){this.spawnRemotePlayer();}
     if(this.launchKey.isDown){this.fire();}
 
     this.updateMissleRotation();
@@ -134,7 +134,7 @@ PhaserGame.prototype = {
     this.missle.angle = this.launcherTurret.angle;
   },
 
-  spawnPlayer: function(){
+  spawnRemotePlayer: function(){
     if(this.spawnDelay == 0){
       this.remotePlayers.push(new RemotePlayer(this.remotePlayerNum, this, this.world.randomX, 595));
       this.remotePlayerNum++;
