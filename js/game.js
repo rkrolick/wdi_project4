@@ -145,14 +145,14 @@ PhaserGame.prototype = {
       this.remotePlayers.push(new RemotePlayer(this.remotePlayerNum, this, this.world.randomX, 595));
       this.remotePlayerNum++;
       this.spawnDelay=10;
-      console.log(this.remotePlayers);
     }
   },
 
   destroyEnemy: function(i){
     this.remotePlayers[i].launcher.kill();
+    this.remotePlayers[i].launcherTurret.kill();
+    this.remotePlayers[i].missle.kill();
     this.remotePlayers.splice(i,1);
-    console.log(this.remotePlayers);
   }
 }
 
