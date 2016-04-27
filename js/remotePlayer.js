@@ -4,5 +4,7 @@ var RemotePlayer = function (index, game, startX, startY){
 
   this.game = game;
   this.alive = true;
-  this.game.add.sprite(x, y, 'launcher');
+  this.launcher = this.game.add.sprite(x, y, 'launcher');
+  this.launcher.anchor.x = 0.5;
+  this.launcher.anchor.y = 0.5;
 }

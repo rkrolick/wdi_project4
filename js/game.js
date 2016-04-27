@@ -11,6 +11,10 @@ var PhaserGame = function(game){
   this.aimDownKey = null;
   this.launchBtn = null;
   this.spawnPlayerKey = null;
+  this.remotePlayers = [];
+  // Temp usage until server is created.
+  this.remotePlayerNum = 0;
+  this.spawnDelay = 0;
 };
 
 PhaserGame.prototype = {
@@ -71,6 +75,8 @@ PhaserGame.prototype = {
 
     this.updateMissleRotation();
     this.checkMissleCollison();
+    console.log(this.spawnDelay);
+    if(this.spawnDelay > 0){this.spawnDelay--;}
   },
 
   moveTurret: function(degree){
@@ -108,7 +114,6 @@ PhaserGame.prototype = {
     this.missle.kill();
     this.camera.follow();
     this.add.tween(this.camera).to({x:(this.launcher.x-(this.game.camera.width/2))}, 1000, "Quint", true, 1000);
-    //this.camera.follow(this.launcher, Phaser.Camera.FOLLOW_LOCKON);
     this.reloadMissle();
   },
 
@@ -119,8 +124,12 @@ PhaserGame.prototype = {
   },
 
   spawnPlayer: function(){
-    //var RemotePlayer = function (index, game, startX, startY){
-
+    if(this.spawnDelay == 0){
+      console.log("Remote Player Spawned");
+      this.remotePlayers.push(new RemotePlayer(this.remotePlayerNum, this, this.world.randomX, 595));
+      this.remotePlayerNum++;
+      this.spawnDelay=100;
+    }
   }
 }
 
