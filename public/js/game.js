@@ -36,7 +36,7 @@ PhaserGame.prototype = {
 
   create: function(){
     // Connect to server
-    socket = io.connect("http://localhost", {port: 8000, transports:["websocket"]})
+    socket = io.connect("http://localhost:8000/", {transports:["websocket"]})
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
     this.ground = this.add.sprite(0, 670, 'ground');
@@ -68,7 +68,7 @@ PhaserGame.prototype = {
     this.launchPowerTxt = this.add.text(10, 10, "Power: 500", {font: "40px Arial", fill: "#FF0000"});
     this.launchPowerTxt.fixedToCamera = true;
     // Start listening for server communications
-    this.setEvenHandlers();
+    this.setEventHandlers();
   },
 
   update: function(){
@@ -161,8 +161,28 @@ PhaserGame.prototype = {
   },
 
   setEventHandlers: function(){
+    socket.on("connect", this.onSocketConnected);
+    socket.on("disconnect", this.onSocketDisconnect);
+    socket.on("new player", this.onNewPlayer);
+    socket.on("move turret", this.onMoveTurret);
+    socket.on("remove player", this.onRemovePlayer);
+  },
 
-  }
+  onSocketConnected: function(){
+    console.log("Connected to server");
+  },
+  onSocketDisconnect: function(){
+    console.log("Disconnected from server");
+  },
+  onNewPlayer: function(data){
+    console.log("New player connected: " + data.id);
+  },
+  onMoveTurret: function(data){
+    console.log();
+  },
+  onRemovePlayer: function(data){
+    console.log();
+  },
 }
 
 game.state.add('game', PhaserGame, true);
