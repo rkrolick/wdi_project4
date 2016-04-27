@@ -107,7 +107,8 @@ PhaserGame.prototype = {
     this.missle.isActive = false;
     this.missle.kill();
     this.camera.follow();
-    this.add.tween(this.camera).to({x:this.launcher.x-20}, 1000, "Quint", true, 1000);
+    this.add.tween(this.camera).to({x:(this.launcher.x-(this.game.camera.width/2))}, 1000, "Quint", true, 1000);
+    //this.camera.follow(this.launcher, Phaser.Camera.FOLLOW_LOCKON);
     this.reloadMissle();
   },
 
