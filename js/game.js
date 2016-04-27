@@ -30,11 +30,13 @@ PhaserGame.prototype = {
     this.load.image('launcherTurret', 'sprites/launcherTurret.png');
     this.load.image('background', 'sprites/background.png');
     this.load.image('missle', 'sprites/missle.png');
+    this.load.image('ground', 'sprites/ground.png')
   },
 
   create: function(){
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
+    this.ground = this.add.sprite(0, 670, 'ground');
     this.launcher = this.add.sprite(this.world.randomX, 595, 'launcher');
     this.missle = this.add.sprite(this.launcher.x+20, this.launcher.y+10, 'missle');
     this.launcherTurret = this.add.sprite(this.launcher.x+20, this.launcher.y+20, 'launcherTurret');
@@ -106,9 +108,9 @@ PhaserGame.prototype = {
 
   checkMissleCollison: function(){
     if(this.missle.isActive){
-      if(this.missle.y > 670){this.resetMissle();}
-
       var missleBounds = this.missle.getBounds();
+      if(Phaser.Rectangle.intersects(missleBounds, this.ground.getBounds())){this.resetMissle();}
+
       var enemyBounds = null;
       for(i=0; i < this.remotePlayers.length; i++){
         enemyBounds = this.remotePlayers[i].launcher.getBounds();
