@@ -34,26 +34,29 @@ PhaserGame.prototype = {
     this.launcher = this.add.sprite(this.world.randomX, 595, 'launcher');
     this.missle = this.add.sprite(this.launcher.x+20, this.launcher.y+10, 'missle');
     this.launcherTurret = this.add.sprite(this.launcher.x+20, this.launcher.y+20, 'launcherTurret');
-    // Setcamera to follow Player
+    // Set camera to follow Player
     this.camera.follow(this.launcherTurret, Phaser.Camera.FOLLOW_LOCKON);
     // Set rotation points
     this.launcherTurret.anchor.y = 0.5;
     this.missle.anchor.y = 0.5;
     this.launcher.anchor.x = 0.5;
     this.launcher.anchor.y = 0.5;
+    // Set Default launcher angle;
+    this.launcherTurret.angle = -90;
+    this.missle.angle = -90;
     // Declare input keys
     this.input.mouse.capture = true;
-    this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
-    this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
-    this.moreLaunchPowerKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-    this.lessLaunchPowerKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.aimUpKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.aimDownKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.moreLaunchPowerKey = this.input.keyboard.addKey(Phaser.Keyboard.W);
+    this.lessLaunchPowerKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
     this.launchKey = this.input.activePointer.leftButton;
     this.spawnPlayerKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
     // Initialize variables
     this.missle.isActive = false;
-    this.launchPower = 1000;
+    this.launchPower = 500;
     // Display hud
-    this.launchPowerTxt = this.add.text(10, 10, "Power: 1000", {font: "40px Arial", fill: "#FF0000"});
+    this.launchPowerTxt = this.add.text(10, 10, "Power: 500", {font: "40px Arial", fill: "#FF0000"});
     this.launchPowerTxt.fixedToCamera = true;
   },
 
