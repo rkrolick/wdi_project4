@@ -108,9 +108,13 @@ PhaserGame.prototype = {
 
   checkMissleCollison: function(){
     if(this.missle.isActive){
+      // Get missle bounding box
       var missleBounds = this.missle.getBounds();
+      // Check for collision with ground
       if(Phaser.Rectangle.intersects(missleBounds, this.ground.getBounds())){this.resetMissle();}
-
+      // Check for outside of game area
+      if(this.missle.x < 0 || this.missle.x > 5000){this.resetMissle();}
+      // Check for collision with any active players.
       var enemyBounds = null;
       for(i=0; i < this.remotePlayers.length; i++){
         enemyBounds = this.remotePlayers[i].launcher.getBounds();
