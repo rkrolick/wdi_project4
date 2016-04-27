@@ -45,7 +45,7 @@ PhaserGame.prototype = {
     this.missle.anchor.y = 0.5;
     this.launcher.anchor.x = 0.5;
     this.launcher.anchor.y = 0.5;
-    // Set Default launcher angle;
+    // Set Default turret and missle angle;
     this.launcherTurret.angle = -90;
     this.missle.angle = -90;
     // Declare input keys
@@ -75,7 +75,8 @@ PhaserGame.prototype = {
 
     this.updateMissleRotation();
     this.checkMissleCollison();
-    console.log(this.spawnDelay);
+
+    // TODO: Remove when server is created.
     if(this.spawnDelay > 0){this.spawnDelay--;}
   },
 
@@ -106,6 +107,16 @@ PhaserGame.prototype = {
   checkMissleCollison: function(){
     if(this.missle.isActive){
       if(this.missle.y > 670){this.resetMissle();}
+
+      var missleBounds = this.missle.getBounds();
+      var enemyBounds = null;
+      for(i=0; i < this.remotePlayers.length; i++){
+        enemyBounds = this.remotePlayers[i].launcher.getBounds();
+        if(Phaser.Rectangle.intersects(missleBounds, enemyBounds)){
+          this.resetMissle();
+          this.destroyEnemy(i);
+        }
+      }
     }
   },
 
@@ -125,11 +136,17 @@ PhaserGame.prototype = {
 
   spawnPlayer: function(){
     if(this.spawnDelay == 0){
-      console.log("Remote Player Spawned");
       this.remotePlayers.push(new RemotePlayer(this.remotePlayerNum, this, this.world.randomX, 595));
       this.remotePlayerNum++;
-      this.spawnDelay=100;
+      this.spawnDelay=10;
+      console.log(this.remotePlayers);
     }
+  },
+
+  destroyEnemy: function(i){
+    this.remotePlayers[i].launcher.kill();
+    this.remotePlayers.splice(i,1);
+    console.log(this.remotePlayers);
   }
 }
 
