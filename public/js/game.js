@@ -1,6 +1,8 @@
 var game = new Phaser.Game(1080, 720, Phaser.CANVAS, 'game');
 
 var PhaserGame = function(game){
+  this.isAlive = null;
+  this.id = null;
   this.launcherBase = null;
   this.launcherTurret = null;
   this.missle = null;
@@ -13,9 +15,6 @@ var PhaserGame = function(game){
   this.spawnPlayerKey = null;
   this.socket = null;
   this.remotePlayers = [];
-  // Temp usage until server is created.
-  this.remotePlayerNum = 0;
-  this.spawnDelay = 0;
 };
 
 PhaserGame.prototype = {
@@ -62,6 +61,7 @@ PhaserGame.prototype = {
     this.launchKey = this.input.activePointer.leftButton;
     this.spawnPlayerKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
     // Initialize variables
+    this.isAlive = true;
     this.missle.isActive = false;
     this.launchPower = 500;
     // Display hud
@@ -73,12 +73,14 @@ PhaserGame.prototype = {
 
   update: function(){
     // Input checks
-    if(this.aimUpKey.isDown && this.launcherTurret.angle > -179){this.moveTurret(-1);}
-    if(this.aimDownKey.isDown && this.launcherTurret.angle < -1){this.moveTurret( 1);}
-    if(this.moreLaunchPowerKey.isDown && this.launchPower < 1000){this.adjustLaunchPower(10);}
-    if(this.lessLaunchPowerKey.isDown && this.launchPower > 500){this.adjustLaunchPower(-10);}
-    if(this.spawnPlayerKey.isDown){this.spawnRemotePlayer();}
-    if(this.launchKey.isDown){this.fire();}
+    if(this.isAlive){
+      if(this.aimUpKey.isDown && this.launcherTurret.angle > -179){this.moveTurret(-1);}
+      if(this.aimDownKey.isDown && this.launcherTurret.angle < -1){this.moveTurret( 1);}
+      if(this.moreLaunchPowerKey.isDown && this.launchPower < 1000){this.adjustLaunchPower(10);}
+      if(this.lessLaunchPowerKey.isDown && this.launchPower > 500){this.adjustLaunchPower(-10);}
+      if(this.spawnPlayerKey.isDown){this.spawnRemotePlayer();}
+      if(this.launchKey.isDown){this.fire();}
+    }
 
     this.updateMissleRotation();
     this.checkMissleCollison();
@@ -125,9 +127,11 @@ PhaserGame.prototype = {
       var enemyBounds = null;
       for(i=0; i < this.remotePlayers.length; i++){
         enemyBounds = this.remotePlayers[i].launcher.getBounds();
+        enemyId = this.remotePlayers[i].id;
         if(Phaser.Rectangle.intersects(missleBounds, enemyBounds)){
           this.resetMissle();
           this.destroyEnemy(i);
+          this.socket.emit("kill player", {id: enemyId});
         }
       }
     }
@@ -145,6 +149,8 @@ PhaserGame.prototype = {
     this.missle.body = null;
     this.missle.reset(this.launcher.x + 20, this.launcher.y + 10);
     this.missle.angle = this.launcherTurret.angle;
+    this.socket.emit("move missle", {x: this.missle.x, y: this.missle.y, r: this.missle.rotation})
+    if(!this.isAlive){this.missle.kill();}
   },
 
   spawnRemotePlayer: function(id,x){
@@ -170,9 +176,17 @@ PhaserGame.prototype = {
     this.remotePlayers.splice(i,1);
   },
 
+  destroySelf: function(){
+    this.isAlive = false;
+    this.launcher.kill();
+    this.launcherTurret.kill();
+    if(!this.missle.isActive){this.missle.kill();}
+  },
+
   setEventHandlers: function(){
     this.socket.on("connect", this.onSocketConnected.bind(this));
     this.socket.on("disconnect", this.onSocketDisconnect.bind(this));
+    this.socket.on("get id", this.onGetId.bind(this));
     this.socket.on("new player", this.onNewPlayer.bind(this));
     this.socket.on("move turret", this.onMoveTurret.bind(this));
     this.socket.on("remove player", this.onRemovePlayer.bind(this));
@@ -186,6 +200,10 @@ PhaserGame.prototype = {
   onSocketDisconnect: function(){
     console.log("Disconnected from server");
   },
+  onGetId: function(data){
+    this.id = data.id;
+    console.log("Your id is: " + this.id);
+  },
   onNewPlayer: function(data){
     console.log("New player connected: " + data.id);
     this.spawnRemotePlayer(data.id, data.x);
@@ -196,7 +214,7 @@ PhaserGame.prototype = {
     this.moveRemoteTurret(index, data.angle);
   },
   onRemovePlayer: function(data){
-    console.log(data.id + "has left the game");
+    if(data.id == this.id){this.destroySelf(); return;}
     var index = this.indexById(data.id);
     this.destroyEnemy(index);
   },
