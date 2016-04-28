@@ -166,7 +166,7 @@ PhaserGame.prototype = {
   moveRemoteMissle: function(i, x, y, r){
     this.remotePlayers[i].missle.x = x;
     this.remotePlayers[i].missle.y = y;
-    this.remotePlayers[i].missle.r = r;
+    this.remotePlayers[i].missle.rotation = r;
   },
 
   destroyEnemy: function(i){
