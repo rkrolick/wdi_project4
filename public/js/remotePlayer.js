@@ -15,7 +15,7 @@ var RemotePlayer = function (id, game, startX, startY){
   this.missle.angle = -90;
 
   RemotePlayer.prototype = {
-    setTurretAngel: function(angle){
+    setTurretAngle: function(angle){
       this.launcherTurret.angle = angle;
       this.missle.angle = angle;
     }

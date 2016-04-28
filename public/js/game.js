@@ -1,7 +1,6 @@
 var game = new Phaser.Game(1080, 720, Phaser.CANVAS, 'game');
 
 var PhaserGame = function(game){
-  this.id = null;
   this.launcherBase = null;
   this.launcherTurret = null;
   this.missle = null;
@@ -91,6 +90,7 @@ PhaserGame.prototype = {
   moveTurret: function(degree){
     this.launcherTurret.angle += degree;
     this.missle.angle += degree;
+    this.socket.emit("move turret", {angle: this.launcherTurret.angle});
   },
 
   fire: function(){
@@ -104,6 +104,7 @@ PhaserGame.prototype = {
   updateMissleRotation: function(){
     if(this.missle.isActive){
       this.missle.rotation = Math.atan2(this.missle.body.velocity.y, this.missle.body.velocity.x);
+      this.socket.emit("move missle", {x: this.missle.x, y: this.missle.y, r: this.missle.rotation})
     }
   },
 
@@ -150,6 +151,18 @@ PhaserGame.prototype = {
     this.remotePlayers.push(new RemotePlayer(id, this, x, 595));
   },
 
+  moveRemoteTurret: function(i, angle){
+    this.remotePlayers[i].launcherTurret.angle = angle;
+    this.remotePlayers[i].missle.angle = angle;
+    // NOTE: Why do I get an error when I call this.remotePlayers[i].setTurretAngle ?
+  },
+
+  moveRemoteMissle: function(i, x, y, r){
+    this.remotePlayers[i].missle.x = x;
+    this.remotePlayers[i].missle.y = y;
+    this.remotePlayers[i].missle.r = r;
+  },
+
   destroyEnemy: function(i){
     this.remotePlayers[i].launcher.kill();
     this.remotePlayers[i].launcherTurret.kill();
@@ -163,6 +176,7 @@ PhaserGame.prototype = {
     this.socket.on("new player", this.onNewPlayer.bind(this));
     this.socket.on("move turret", this.onMoveTurret.bind(this));
     this.socket.on("remove player", this.onRemovePlayer.bind(this));
+    this.socket.on("move missle", this.onMoveMissle.bind(this));
   },
 
   onSocketConnected: function(){
@@ -177,12 +191,18 @@ PhaserGame.prototype = {
     this.spawnRemotePlayer(data.id, data.x);
   },
   onMoveTurret: function(data){
-    console.log();
+    console.log(data.id + " moved their turret");
+    var index = this.indexById(data.id);
+    this.moveRemoteTurret(index, data.angle);
   },
   onRemovePlayer: function(data){
     console.log(data.id + "has left the game");
     var index = this.indexById(data.id);
     this.destroyEnemy(index);
+  },
+  onMoveMissle: function(data){
+    var index = this.indexById(data.id);
+    this.moveRemoteMissle(index, data.x, data.y, data.r);
   },
 
   indexById(id){
