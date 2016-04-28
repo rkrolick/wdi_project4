@@ -35,7 +35,7 @@ PhaserGame.prototype = {
 
   create: function(){
     // Connect to server
-    this.socket = io.connect("http://localhost:8000/", {transports:["websocket"]})
+    this.socket = io.connect("http://107.170.62.250:3000");
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
     this.ground = this.add.sprite(0, 670, 'ground');
