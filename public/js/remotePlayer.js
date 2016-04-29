@@ -13,6 +13,18 @@ var RemotePlayer = function (id, game, startX, startY){
   this.launcher.anchor.y = 0.5;
   this.launcherTurret.angle = -90;
   this.missle.angle = -90;
+  // Missle explosion
+  this.missleExplosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
+  this.missleExplosion.anchor.x = 0.5;
+  this.missleExplosion.anchor.y = 0.5;
+  this.missleBoom = this.missleExplosion.animations.add('boom');
+  this.missleExplosion.animations.play('boom', 6, false);
+  // Launcher explosion
+  this.bodyExplosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
+  this.bodyExplosion.anchor.x = 0.5;
+  this.bodyExplosion.anchor.y = 0.5;
+  this.bodyBoom = this.bodyExplosion.animations.add('boom');
+  this.bodyExplosion.animations.play('boom', 6, false);
 
   RemotePlayer.prototype = {
     setTurretAngle: function(angle){

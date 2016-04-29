@@ -67,12 +67,18 @@ PhaserGame.prototype = {
     // Display hud
     this.launchPowerTxt = this.add.text(10, 10, "Power: 500", {font: "40px Arial", fill: "#FF0000"});
     this.launchPowerTxt.fixedToCamera = true;
-    // Explosion testing
-    this.explosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
-    this.explosion.anchor.x = 0.5;
-    this.explosion.anchor.y = 0.5;
-    this.boom = this.explosion.animations.add('boom');
-    this.explosion.animations.play('boom', 6, false);
+    // Missle explosion
+    this.missleExplosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
+    this.missleExplosion.anchor.x = 0.5;
+    this.missleExplosion.anchor.y = 0.5;
+    this.missleBoom = this.missleExplosion.animations.add('boom');
+    this.missleExplosion.animations.play('boom', 6, false);
+    // Launcher explosion
+    this.bodyExplosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
+    this.bodyExplosion.anchor.x = 0.5;
+    this.bodyExplosion.anchor.y = 0.5;
+    this.bodyBoom = this.bodyExplosion.animations.add('boom');
+    this.bodyExplosion.animations.play('boom', 6, false);
     // Connect to server
     this.socket = io.connect("http://107.170.62.250:3000");
     // Listen for events
@@ -147,9 +153,9 @@ PhaserGame.prototype = {
 
   resetMissle: function(){
     this.missle.isActive = false;
-    this.explosion.x = this.missle.x;
-    this.explosion.y = this.missle.y;
-    this.explosion.animations.play("boom", 6, false);
+    this.missleExplosion.x = this.missle.x;
+    this.missleExplosion.y = this.missle.y;
+    this.missleExplosion.animations.play("boom", 6, false);
     this.missle.kill();
     this.camera.follow();
     this.add.tween(this.camera).to({x:(this.launcher.x-(this.game.camera.width/2))}, 1000, "Quint", true, 1000);
@@ -181,6 +187,9 @@ PhaserGame.prototype = {
   },
 
   destroyEnemy: function(i){
+    this.remotePlayers[i].bodyExplosion.x = this.remotePlayers[i].launcher.x;
+    this.remotePlayers[i].bodyExplosion.y = this.remotePlayers[i].launcher.y;
+    this.remotePlayers[i].bodyExplosion.animations.play("boom", 6, false);
     this.remotePlayers[i].launcher.kill();
     this.remotePlayers[i].launcherTurret.kill();
     this.remotePlayers[i].missle.kill();
@@ -189,6 +198,9 @@ PhaserGame.prototype = {
 
   destroySelf: function(){
     this.isAlive = false;
+    this.bodyExplosion.x = this.launcher.x;
+    this.bodyExplosion.y = this.launcher.y;
+    this.bodyExplosion.animations.play("boom", 6, false);
     this.launcher.kill();
     this.launcherTurret.kill();
     if(!this.missle.isActive){this.missle.kill();}
