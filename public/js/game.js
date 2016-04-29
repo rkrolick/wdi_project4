@@ -30,12 +30,12 @@ PhaserGame.prototype = {
     this.load.image('launcherTurret', 'sprites/launcherTurret.png');
     this.load.image('background', 'sprites/background.png');
     this.load.image('missle', 'sprites/missle.png');
-    this.load.image('ground', 'sprites/ground.png')
+    this.load.image('ground', 'sprites/ground.png');
+    this.load.spritesheet('explosion', 'sprites/explosion.png', 500, 500, 4);
+    // this.load.image('explosion', 'sprites/explosion.png');
   },
 
   create: function(){
-    // Connect to server
-    this.socket = io.connect("http://107.170.62.250:3000");
     // Draw sprites
     this.background = this.add.sprite(0, 0, 'background');
     this.ground = this.add.sprite(0, 670, 'ground');
@@ -67,7 +67,15 @@ PhaserGame.prototype = {
     // Display hud
     this.launchPowerTxt = this.add.text(10, 10, "Power: 500", {font: "40px Arial", fill: "#FF0000"});
     this.launchPowerTxt.fixedToCamera = true;
-    // Start listening for server communications
+    // Explosion testing
+    this.explosion = this.add.sprite(this.launcher.x, this.launcher.y, 'explosion');
+    this.explosion.anchor.x = 0.5;
+    this.explosion.anchor.y = 0.5;
+    this.boom = this.explosion.animations.add('boom');
+    this.explosion.animations.play('boom', 6, false);
+    // Connect to server
+    this.socket = io.connect("http://107.170.62.250:3000");
+    // Listen for events
     this.setEventHandlers();
   },
 
@@ -139,6 +147,9 @@ PhaserGame.prototype = {
 
   resetMissle: function(){
     this.missle.isActive = false;
+    this.explosion.x = this.missle.x;
+    this.explosion.y = this.missle.y;
+    this.explosion.animations.play("boom", 6, false);
     this.missle.kill();
     this.camera.follow();
     this.add.tween(this.camera).to({x:(this.launcher.x-(this.game.camera.width/2))}, 1000, "Quint", true, 1000);
