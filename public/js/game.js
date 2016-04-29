@@ -187,9 +187,9 @@ PhaserGame.prototype = {
   },
 
   destroyEnemy: function(i){
-    this.remotePlayers[i].bodyExplosion.x = this.remotePlayers[i].launcher.x;
-    this.remotePlayers[i].bodyExplosion.y = this.remotePlayers[i].launcher.y;
-    this.remotePlayers[i].bodyExplosion.animations.play("boom", 6, false);
+    // this.remotePlayers[i].bodyExplosion.x = this.remotePlayers[i].launcher.x;
+    // this.remotePlayers[i].bodyExplosion.y = this.remotePlayers[i].launcher.y;
+    // this.remotePlayers[i].bodyExplosion.animations.play("boom", 6, false);
     this.remotePlayers[i].launcher.kill();
     this.remotePlayers[i].launcherTurret.kill();
     this.remotePlayers[i].missle.kill();
